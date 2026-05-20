@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#1976d2">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>신촌연합교회 — 새신자 등록</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue:       #1976d2;
+      --blue-dark:  #1251a3;
+      --blue-mid:   #2196f3;
+      --blue-light: #42a5f5;
+      --blue-pale:  #e3f2fd;
+      --blue-dim:   rgba(33,150,243,0.10);
+      --white:      #ffffff;
+      --off-white:  #f5f9ff;
+      --text:       #0d1f3c;
+      --text-mid:   #3a5070;
+      --text-dim:   #7a93b4;
+      --border:     #bbdefb;
+      --border-soft:#ddeeff;
+      --success:    #1e8c5a;
+      --danger:     #c0392b;
+      --radius:     14px;
+      --radius-sm:  8px;
+      --shadow:     0 4px 20px rgba(25,118,210,0.12);
+      --shadow-lg:  0 8px 36px rgba(25,118,210,0.18);
+    }
+    html, body { height: 100%; background: var(--off-white); color: var(--text); font-family: 'Noto Sans KR', sans-serif; -webkit-tap-highlight-color: transparent; }
+
+
+<!-- ✅ 여기에 Firebase 설정을 입력하세요 -->
+<script type="module">
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyCkZuRJdS5EE4usdfSu1JScl_Yi7_dDTz8",
+  authDomain: "suc-newcomers-54690.firebaseapp.com",
+  projectId: "suc-newcomers-54690",
+  storageBucket: "suc-newcomers-54690.firebasestorage.app",
+  messagingSenderId: "320033410479",
+  appId: "1:320033410479:web:86d3ef115a20b5881ab35a"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+
+    /* ── Layout ── */
+    .app { display: grid; grid-template-rows: auto 1fr auto; min-height: 100dvh; }
+    @media (min-width: 900px) {
+      body { background: #cfe3f8; }
+      .app { max-width: 1020px; margin: 0 auto; grid-template-columns: 260px 1fr; grid-template-rows: 1fr; grid-template-areas: "side main"; border-left: 1px solid var(--border); border-right: 1px solid var(--border); min-height: 100dvh; box-shadow: var(--shadow-lg); background: var(--white); }
+      .header { display: none; } .bottom-nav { display: none; }
+      .sidebar { display: flex; flex-direction: column; grid-area: side; border-right: 1px solid var(--border); background: linear-gradient(180deg, var(--blue-dark) 0%, var(--blue) 100%); }
+      .page-wrap { grid-area: main; overflow-y: auto; height: 100dvh; background: var(--off-white); }
+    }
+    @media (max-width: 899px) { .sidebar { display: none; } .page-wrap { overflow-y: auto; } }
+
+    /* ── Mobile Header ── */
+    .header {
+      background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-mid) 100%);
+      padding: 0 16px;
+      display: flex; align-items: center; gap: 10px;
+      position: sticky; top: 0; z-index: 50;
+      height: 56px;
+      box-shadow: 0 2px 10px rgba(18,81,163,0.25);
+    }
+    .header-logo { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+    .header-logo svg { flex-shrink: 0; }
+    .header-title { min-width: 0; }
+    .header-title .ko { font-family: 'Noto Serif KR', serif; font-size: 13px; font-weight: 600; color: var(--white); white-space: nowrap; line-height: 1.2; }
+    .header-title .en { font-size: 9px; color: rgba(255,255,255,0.55); letter-spacing: 0.06em; text-transform: uppercase; }
+    .header-badge { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); padding: 3px 10px; border-radius: 100px; font-size: 11px; color: var(--white); flex-shrink: 0; }
+
+    /* ── Sinchon Logo SVG ── */
+    .logo-svg { display: block; }
+
+    /* ── Sidebar ── */
+    .sidebar-top { padding: 24px 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.12); }
+    .sidebar-logo-row { display: flex; align-items: center; gap: 12px; }
+    .sidebar-church { font-family: 'Noto Serif KR', serif; font-size: 15px; color: var(--white); font-weight: 600; line-height: 1.4; }
+    .sidebar-en { font-size: 10px; color: rgba(255,255,255,0.5); letter-spacing: 0.1em; }
+    .sidebar-nav { padding: 14px 10px; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+    .sidebar-link { display: flex; align-items: center; gap: 10px; padding: 11px 14px; border-radius: var(--radius-sm); color: rgba(255,255,255,0.6); font-size: 14px; cursor: pointer; transition: all 0.18s; border: 1px solid transparent; }
+    .sidebar-link:hover { color: var(--white); background: rgba(255,255,255,0.1); }
+    .sidebar-link.active { color: var(--white); background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.2); }
+    .sidebar-stats { margin: 4px 10px 20px; padding: 14px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius); }
+    .sidebar-stats h4 { font-size: 10px; color: rgba(255,255,255,0.4); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 10px; }
+    .stat-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .stat-item:last-child { border: none; }
+    .stat-item .label { font-size: 12px; color: rgba(255,255,255,0.5); }
+    .stat-item .val { font-size: 20px; font-weight: 600; color: var(--white); }
+
+    /* ── Bottom Nav ── */
+    .bottom-nav { background: linear-gradient(135deg, var(--blue-dark), var(--blue-mid)); border-top: 1px solid rgba(255,255,255,0.12); display: flex; position: sticky; bottom: 0; z-index: 50; }
+    .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 9px 0 12px; color: rgba(255,255,255,0.45); font-size: 10px; cursor: pointer; border: none; background: none; transition: color 0.18s; font-family: 'Noto Sans KR', sans-serif; }
+    .nav-btn .ico { font-size: 20px; line-height: 1; }
+    .nav-btn.active { color: var(--white); }
+
+    /* ── Pages ── */
+    .page { display: none; padding: 16px; }
+    .page.active { display: block; }
+    @media (min-width: 900px) { .page { padding: 32px 36px; } }
+
+    /* ── Page Header ── */
+    .page-hero {
+      background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-mid) 100%);
+      border-radius: var(--radius);
+      padding: 18px 18px 16px;
+      margin-bottom: 16px;
+      display: flex; align-items: center; gap: 14px;
+      box-shadow: var(--shadow);
+    }
+    .page-hero-text .welcome {
+      font-family: 'Noto Serif KR', serif;
+      font-size: clamp(13px, 3.5vw, 18px);
+      font-weight: 600; color: var(--white);
+      white-space: nowrap;
+      line-height: 1.3;
+    }
+    .page-hero-text .sub { font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 3px; }
+
+    .section-title { font-family: 'Noto Serif KR', serif; font-size: 20px; color: var(--blue-dark); font-weight: 600; margin-bottom: 4px; }
+    .section-sub { font-size: 13px; color: var(--text-dim); margin-bottom: 18px; line-height: 1.6; }
+
+    /* ── Form Card ── */
+    .form-card { background: var(--white); border: 1px solid var(--border-soft); border-radius: var(--radius); padding: 18px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(25,118,210,0.06); }
+    .form-card-title { font-size: 12px; font-weight: 700; color: var(--blue); margin-bottom: 14px; padding-bottom: 9px; border-bottom: 2px solid var(--blue-pale); display: flex; align-items: center; gap: 7px; letter-spacing: 0.03em; text-transform: uppercase; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 400px) { .form-grid { grid-template-columns: 1fr; } }
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-group label { font-size: 11px; color: var(--text-mid); font-weight: 500; letter-spacing: 0.02em; }
+    .req { color: var(--blue); margin-left: 2px; }
+    .form-group input, .form-group select, .form-group textarea {
+      background: var(--off-white); border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm); padding: 10px 12px;
+      color: var(--text); font-size: 14px; font-family: 'Noto Sans KR', sans-serif;
+      outline: none; transition: all 0.18s; width: 100%;
+      -webkit-appearance: none; appearance: none;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      border-color: var(--blue-mid); background: var(--white);
+      box-shadow: 0 0 0 3px rgba(33,150,243,0.1);
+    }
+    .form-group textarea { resize: none; height: 80px; line-height: 1.6; }
+    .form-group select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231976d2' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+    .form-group select option { background: var(--white); }
+
+    /* ── Date input fix ── */
+    input[type="date"] { position: relative; }
+    input[type="date"]::-webkit-calendar-picker-indicator { opacity: 0.5; cursor: pointer; }
+
+    /* ── Type Selector ── */
+    .type-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .type-btn { padding: 13px 12px; border: 2px solid var(--border); border-radius: var(--radius-sm); background: var(--off-white); color: var(--text-dim); font-size: 14px; font-weight: 500; font-family: 'Noto Sans KR', sans-serif; cursor: pointer; transition: all 0.18s; text-align: center; -webkit-tap-highlight-color: transparent; }
+    .type-btn.active-visitor { border-color: var(--blue-mid); background: var(--blue-dim); color: var(--blue); }
+    .type-btn.active-new     { border-color: #1e8c5a; background: rgba(30,140,90,0.08); color: #1a6644; }
+
+    /* ── Yes/No Toggle ── */
+    .yn-toggle { display: flex; gap: 8px; }
+    .yn-btn { flex: 1; padding: 9px 6px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); background: var(--off-white); color: var(--text-dim); font-size: 13px; font-family: 'Noto Sans KR', sans-serif; cursor: pointer; transition: all 0.18s; text-align: center; -webkit-tap-highlight-color: transparent; }
+    .yn-btn.active { border-color: var(--blue-mid); background: var(--blue-dim); color: var(--blue); font-weight: 600; }
+
+    /* ── Family Table ── */
+    .family-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -18px; padding: 0 18px; }
+    .family-table { width: 100%; min-width: 480px; border-collapse: collapse; font-size: 13px; }
+    .family-table th { background: var(--blue-pale); color: var(--blue-dark); font-weight: 600; font-size: 11px; letter-spacing: 0.04em; padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    .family-table td { padding: 5px 5px; border-bottom: 1px solid var(--border-soft); vertical-align: middle; }
+    .family-table tr:last-child td { border: none; }
+    .family-table input, .family-table select { width: 100%; min-width: 0; background: transparent; border: none; padding: 5px 6px; color: var(--text); font-size: 13px; font-family: 'Noto Sans KR', sans-serif; outline: none; border-radius: 4px; }
+    .family-table input:focus, .family-table select:focus { background: var(--blue-pale); }
+    .family-table select option { background: var(--white); }
+    .add-family-btn { margin-top: 10px; width: 100%; padding: 9px; border: 1.5px dashed var(--border); border-radius: var(--radius-sm); background: transparent; color: var(--text-dim); font-size: 13px; font-family: 'Noto Sans KR', sans-serif; cursor: pointer; transition: all 0.15s; }
+    .add-family-btn:hover { border-color: var(--blue-mid); color: var(--blue); background: var(--blue-dim); }
+    .del-row-btn { background: none; border: none; color: #ccc; cursor: pointer; font-size: 15px; padding: 2px 6px; }
+    .del-row-btn:hover { color: var(--danger); }
+
+    /* ── Buttons ── */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 13px 20px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.18s; border: none; font-family: 'Noto Sans KR', sans-serif; -webkit-tap-highlight-color: transparent; }
+    .btn-primary { background: linear-gradient(135deg, var(--blue) 0%, var(--blue-mid) 100%); color: var(--white); box-shadow: 0 3px 14px rgba(25,118,210,0.3); }
+    .btn-primary:hover { filter: brightness(1.08); box-shadow: 0 4px 18px rgba(25,118,210,0.4); transform: translateY(-1px); }
+    .btn-primary:active { transform: none; }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-outline { background: transparent; color: var(--blue); border: 1.5px solid var(--border); }
+    .btn-outline:hover { border-color: var(--blue-mid); background: var(--blue-dim); }
+    .btn-ghost { background: var(--border-soft); color: var(--text-mid); border: 1px solid var(--border); }
+    .btn-danger { background: transparent; color: var(--danger); border: 1px solid rgba(192,57,43,0.3); }
+    .btn-danger:hover { background: rgba(192,57,43,0.06); }
+    .btn-full { width: 100%; }
+    .btn-sm { padding: 9px 14px; font-size: 13px; }
+
+    /* ── Save area ── */
+    .save-area { padding: 10px 0 4px; }
+
+    /* ── Members ── */
+    .toolbar { display: flex; gap: 10px; margin-bottom: 12px; }
+    .toolbar input { flex: 1; background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; color: var(--text); font-size: 14px; outline: none; font-family: 'Noto Sans KR', sans-serif; }
+    .toolbar input:focus { border-color: var(--blue-mid); }
+    .filter-chips { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+    .chip { padding: 5px 14px; border-radius: 100px; font-size: 12px; border: 1.5px solid var(--border); color: var(--text-dim); cursor: pointer; background: var(--white); transition: all 0.15s; font-family: 'Noto Sans KR', sans-serif; }
+    .chip.active { background: var(--blue-dim); border-color: var(--blue-mid); color: var(--blue); font-weight: 600; }
+
+    .member-card { background: var(--white); border: 1px solid var(--border-soft); border-radius: var(--radius); padding: 13px 15px; margin-bottom: 9px; display: flex; align-items: center; gap: 13px; cursor: pointer; transition: all 0.18s; box-shadow: 0 1px 4px rgba(25,118,210,0.06); }
+    .member-card:hover { border-color: var(--blue-light); transform: translateY(-1px); box-shadow: var(--shadow); }
+    .avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--blue-dim); border: 2px solid var(--blue-pale); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: var(--blue); flex-shrink: 0; }
+    .member-info { flex: 1; min-width: 0; }
+    .member-name { font-size: 15px; font-weight: 500; color: var(--text); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .member-sub { font-size: 12px; color: var(--text-dim); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .member-date { font-size: 11px; color: var(--text-dim); text-align: right; flex-shrink: 0; }
+
+    .badge { display: inline-block; padding: 2px 9px; border-radius: 100px; font-size: 11px; font-weight: 600; }
+    .badge-new     { background: rgba(30,140,90,0.1); color: #1a6644; border: 1px solid rgba(30,140,90,0.25); }
+    .badge-visitor { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(25,118,210,0.2); }
+
+    .empty-state { text-align: center; padding: 56px 20px; color: var(--text-dim); }
+    .empty-state .ico { font-size: 40px; display: block; margin-bottom: 12px; opacity: 0.35; }
+
+    /* ── Print Button ── */
+    .print-row { display: flex; justify-content: flex-end; margin-bottom: 14px; gap: 8px; }
+
+    /* ── Modal ── */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(13,29,61,0.45); z-index: 200; display: none; align-items: flex-end; justify-content: center; backdrop-filter: blur(2px); }
+    .modal-overlay.show { display: flex; }
+    @media (min-width: 600px) { .modal-overlay { align-items: center; padding: 20px; } }
+    .modal { background: var(--white); border-radius: var(--radius) var(--radius) 0 0; width: 100%; max-width: 540px; max-height: 88dvh; overflow-y: auto; box-shadow: var(--shadow-lg); animation: slideUp 0.22s ease; }
+    @media (min-width: 600px) { .modal { border-radius: var(--radius); } }
+    @keyframes slideUp { from { transform: translateY(24px); opacity: 0; } }
+    .modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 10px auto 0; }
+    .modal-header { padding: 14px 18px 12px; border-bottom: 1px solid var(--border-soft); display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, var(--blue-dark), var(--blue-mid)); }
+    .modal-title { font-size: 15px; font-weight: 600; color: var(--white); }
+    .modal-close { background: rgba(255,255,255,0.15); border: none; color: var(--white); font-size: 16px; cursor: pointer; padding: 4px 10px; border-radius: 6px; }
+    .modal-body { padding: 18px; }
+    .detail-avatar { width: 60px; height: 60px; border-radius: 50%; background: var(--blue-dim); border: 3px solid var(--blue-pale); display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--blue); margin: 0 auto 12px; font-weight: 700; }
+    .detail-name { text-align: center; font-size: 19px; font-weight: 600; color: var(--blue-dark); margin-bottom: 5px; }
+    .detail-type { text-align: center; margin-bottom: 16px; }
+    .detail-sec { font-size: 11px; font-weight: 700; color: var(--blue); letter-spacing: 0.08em; text-transform: uppercase; margin: 14px 0 7px; padding-bottom: 5px; border-bottom: 2px solid var(--blue-pale); }
+    .detail-field { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border-soft); }
+    .detail-field:last-child { border: none; }
+    .detail-field .key { font-size: 12px; color: var(--text-dim); min-width: 72px; flex-shrink: 0; }
+    .detail-field .val { font-size: 13px; color: var(--text); flex: 1; word-break: break-word; }
+    .modal-actions { padding: 0 18px 18px; display: flex; gap: 8px; }
+
+    /* ── Toast ── */
+    .toast { position: fixed; bottom: 74px; left: 50%; transform: translateX(-50%); background: var(--blue-dark); color: var(--white); padding: 11px 20px; border-radius: var(--radius-sm); font-size: 13px; z-index: 999; display: none; align-items: center; gap: 8px; white-space: nowrap; box-shadow: var(--shadow-lg); }
+    .toast.show { display: flex; animation: fadeup 0.22s ease; }
+    @keyframes fadeup { from { opacity: 0; transform: translate(-50%, 8px); } }
+    @media (min-width: 900px) { .toast { bottom: 20px; } }
+
+    /* ══════════════════════════════
+       PRINT STYLES
+    ══════════════════════════════ */
+    @media print {
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      body, html { background: white !important; font-size: 11px; }
+      .header, .bottom-nav, .sidebar, .toolbar, .filter-chips, .print-row,
+      .toast, .modal-overlay, .page:not(#page-list) { display: none !important; }
+      .app { display: block !important; max-width: 100% !important; box-shadow: none !important; }
+      .page-wrap { height: auto !important; overflow: visible !important; }
+      #page-list { display: block !important; padding: 0 !important; }
+      .section-title, .section-sub { display: none; }
+
+      /* Print header */
+      #print-header { display: flex !important; align-items: center; gap: 12px; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 2px solid #1976d2; }
+      #print-title { font-family: 'Noto Serif KR', serif; font-size: 16px; font-weight: 700; color: #1251a3; }
+      #print-date { font-size: 11px; color: #666; margin-left: auto; }
+
+      /* Print table */
+      .member-card { display: none !important; }
+      #print-table { display: table !important; width: 100%; border-collapse: collapse; font-size: 10px; }
+      #print-table th { background: #1976d2 !important; color: white !important; padding: 6px 8px; text-align: left; font-size: 10px; white-space: nowrap; }
+      #print-table td { padding: 5px 8px; border-bottom: 1px solid #e0e0e0; vertical-align: middle; }
+      #print-table tr:nth-child(even) td { background: #f5f9ff !important; }
+      #print-table .pbadge { display: inline-block; padding: 1px 6px; border-radius: 8px; font-size: 9px; font-weight: 600; }
+      #print-table .pbadge-v { background: #e3f2fd; color: #1976d2; }
+      #print-table .pbadge-n { background: #e8f5e9; color: #1a6644; }
+      @page { size: A4 landscape; margin: 14mm 12mm; }
+    }
+    #print-header { display: none; }
+    #print-table  { display: none; }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ── Mobile Header ── -->
+  <header class="header">
+    <div class="header-logo">
+      <!-- Sinchon United Church Logo SVG -->
+      <svg class="logo-svg" width="36" height="28" viewBox="0 0 80 62" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Outer arc (light blue) -->
+        <path d="M18 54 Q4 30 22 10 Q30 2 40 2" stroke="#90caf9" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <!-- Inner arc (white/silver) -->
+        <path d="M26 56 Q14 36 28 18 Q34 10 42 8" stroke="white" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.85"/>
+        <!-- Right swoosh blade -->
+        <path d="M40 4 Q60 12 68 32 Q72 46 62 56" stroke="white" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <!-- Cross center vertical -->
+        <line x1="40" y1="14" x2="40" y2="50" stroke="white" stroke-width="3.5" stroke-linecap="round"/>
+        <!-- Cross center horizontal -->
+        <line x1="26" y1="28" x2="56" y2="28" stroke="white" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+      <div class="header-title">
+        <div class="ko">신촌연합교회</div>
+        <div class="en">SINCHON UNITED CHURCH</div>
+      </div>
+    </div>
+    <div class="header-badge" id="mob-badge">0명</div>
+  </header>
+
+  <!-- ── Desktop Sidebar ── -->
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <div class="sidebar-logo-row">
+        <svg width="44" height="36" viewBox="0 0 80 62" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18 54 Q4 30 22 10 Q30 2 40 2" stroke="#90caf9" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path d="M26 56 Q14 36 28 18 Q34 10 42 8" stroke="white" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.8"/>
+          <path d="M40 4 Q60 12 68 32 Q72 46 62 56" stroke="white" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <line x1="40" y1="14" x2="40" y2="50" stroke="white" stroke-width="3.5" stroke-linecap="round"/>
+          <line x1="26" y1="28" x2="56" y2="28" stroke="white" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+        <div>
+          <div class="sidebar-church">신촌연합교회</div>
+          <div class="sidebar-en">SINCHON UNITED CHURCH</div>
+        </div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-link active" onclick="switchPage('input',this)">✏️ &nbsp;새신자 등록</div>
+      <div class="sidebar-link" onclick="switchPage('list',this)">👥 &nbsp;명단 관리</div>
+    </nav>
+    <div class="sidebar-stats">
+      <h4>현황 요약</h4>
+      <div class="stat-item"><span class="label">전체 등록</span><span class="val" id="s-total">0</span></div>
+      <div class="stat-item"><span class="label">방문자</span><span class="val" id="s-visitor">0</span></div>
+      <div class="stat-item"><span class="label">새신자</span><span class="val" id="s-new">0</span></div>
+    </div>
+  </aside>
+
+  <!-- ── Pages ── -->
+  <div class="page-wrap">
+
+    <!-- ① 등록 입력 -->
+    <div class="page active" id="page-input">
+
+      <!-- Hero -->
+      <div class="page-hero">
+        <svg width="48" height="38" viewBox="0 0 80 62" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18 54 Q4 30 22 10 Q30 2 40 2" stroke="#90caf9" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path d="M26 56 Q14 36 28 18 Q34 10 42 8" stroke="white" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.8"/>
+          <path d="M40 4 Q60 12 68 32 Q72 46 62 56" stroke="white" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <line x1="40" y1="14" x2="40" y2="50" stroke="white" stroke-width="3.5" stroke-linecap="round"/>
+          <line x1="26" y1="28" x2="56" y2="28" stroke="white" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+        <div class="page-hero-text">
+          <div class="welcome">신촌연합교회에 오신 것을 환영합니다!</div>
+          <div class="sub">대한예수교장로회 신촌연합교회</div>
+        </div>
+      </div>
+
+      <!-- 방문 유형 + 날짜 -->
+      <div class="form-card">
+        <div class="form-card-title">방문 유형 및 일자</div>
+        <div class="type-selector" style="margin-bottom:12px;">
+          <button class="type-btn active-visitor" id="btn-visitor" onclick="selectType('방문자')">방문자</button>
+          <button class="type-btn" id="btn-new" onclick="selectType('새신자')">새신자</button>
+        </div>
+        <input type="hidden" id="f-type" value="방문자">
+        <div class="form-group">
+          <label>방문일 <span class="req">*</span></label>
+          <input id="f-date" type="date" style="max-width:100%;">
+        </div>
+      </div>
+
+      <!-- 기본정보 -->
+      <div class="form-card">
+        <div class="form-card-title">기본정보 — 연락처</div>
+        <div class="form-grid">
+          <div class="form-group full"><label>이름 <span class="req">*</span></label><input id="f-name" type="text" autocomplete="name"></div>
+          <div class="form-group"><label>생년월일</label><input id="f-birth" type="text"></div>
+          <div class="form-group"><label>전화번호</label><input id="f-phone" type="tel"></div>
+          <div class="form-group full"><label>이메일</label><input id="f-email" type="email"></div>
+        </div>
+      </div>
+
+      <!-- 거주지 -->
+      <div class="form-card">
+        <div class="form-card-title">거주지</div>
+        <div class="form-grid">
+          <div class="form-group full"><label>주소</label><input id="f-addr" type="text"></div>
+          <div class="form-group full"><label>학교 / 직장</label><input id="f-job" type="text"></div>
+        </div>
+      </div>
+
+      <!-- 세례 -->
+      <div class="form-card">
+        <div class="form-card-title">세례</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>세례 여부</label>
+            <div class="yn-toggle">
+              <button class="yn-btn active" id="yn-y" onclick="setBaptism(true)">Y (받음)</button>
+              <button class="yn-btn" id="yn-n" onclick="setBaptism(false)">N (안받음)</button>
+            </div>
+          </div>
+          <div class="form-group"><label>세례년도</label><input id="f-baptism-year" type="text"></div>
+          <div class="form-group full"><label>집례교회</label><input id="f-baptism-church" type="text"></div>
+        </div>
+        <input type="hidden" id="f-baptism" value="Y">
+      </div>
+
+      <!-- 신앙이력 -->
+      <div class="form-card">
+        <div class="form-card-title">신앙이력</div>
+        <div class="form-grid">
+          <div class="form-group full"><label>출석교회</label><input id="f-prev-church" type="text"></div>
+          <div class="form-group"><label>소재지</label><input id="f-prev-loc" type="text"></div>
+          <div class="form-group"><label>교단</label><input id="f-prev-denom" type="text"></div>
+          <div class="form-group"><label>담임목사 명</label><input id="f-prev-pastor" type="text"></div>
+          <div class="form-group">
+            <label>봉사경험</label>
+            <div class="yn-toggle">
+              <button class="yn-btn active" id="srv-y" onclick="setService(true)">O (있음)</button>
+              <button class="yn-btn" id="srv-n" onclick="setService(false)">X (없음)</button>
+            </div>
+          </div>
+        </div>
+        <input type="hidden" id="f-service" value="O">
+      </div>
+
+      <!-- 가족 -->
+      <div class="form-card">
+        <div class="form-card-title">가족</div>
+        <div class="family-scroll">
+          <table class="family-table" id="familyTable">
+            <thead>
+              <tr>
+                <th>관계</th><th>이름</th><th>세례</th><th>직분</th><th>출석교회</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="familyBody">
+              <tr>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><select><option>Y</option><option>N</option></select></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><button class="del-row-btn" onclick="removeRow(this)">✕</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <button class="add-family-btn" onclick="addFamilyRow()">+ 가족 추가</button>
+      </div>
+
+      <!-- 기도제목 -->
+      <div class="form-card">
+        <div class="form-card-title">기도제목</div>
+        <div class="form-group"><label>기도제목</label><textarea id="f-memo"></textarea></div>
+      </div>
+
+      <!-- 참고사항 -->
+      <div class="form-card">
+        <div class="form-card-title">참고사항</div>
+        <div class="form-group"><label>참고사항</label><textarea id="f-note"></textarea></div>
+      </div>
+
+      <!-- 저장 -->
+      <div class="save-area">
+        <button class="btn btn-primary btn-full" id="saveBtn" onclick="saveRecord()">☁️ 저장하기</button>
+      </div>
+      <div style="height:16px;"></div>
+    </div>
+
+    <!-- ② 명단 관리 -->
+    <div class="page" id="page-list">
+      <!-- Print-only header -->
+      <div id="print-header">
+        <svg width="44" height="34" viewBox="0 0 80 62" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18 54 Q4 30 22 10 Q30 2 40 2" stroke="#1976d2" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path d="M26 56 Q14 36 28 18 Q34 10 42 8" stroke="#90caf9" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <path d="M40 4 Q60 12 68 32 Q72 46 62 56" stroke="#1976d2" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <line x1="40" y1="14" x2="40" y2="50" stroke="#1251a3" stroke-width="3.5" stroke-linecap="round"/>
+          <line x1="26" y1="28" x2="56" y2="28" stroke="#1251a3" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+        <div id="print-title">신촌연합교회 방문자·새신자 등록 명단</div>
+        <div id="print-date"></div>
+      </div>
+
+      <div class="section-title">명단 관리</div>
+      <div class="section-sub">Firebase에 저장된 전체 등록 명단</div>
+
+      <div class="print-row">
+        <button class="btn btn-outline btn-sm" onclick="showToast('🔄 실시간 동기화 중')">↻ 새로고침</button>
+        <button class="btn btn-primary btn-sm" onclick="printList()">🖨️ A4 인쇄</button>
+      </div>
+      <div class="toolbar">
+        <input type="text" id="searchInput" placeholder="이름, 연락처, 이메일 검색..." oninput="renderList()">
+      </div>
+      <div class="filter-chips">
+        <button class="chip active" onclick="setFilter('all',this)">전체</button>
+        <button class="chip" onclick="setFilter('방문자',this)">방문자</button>
+        <button class="chip" onclick="setFilter('새신자',this)">새신자</button>
+      </div>
+
+      <!-- Screen list -->
+      <div id="memberList"></div>
+
+      <!-- Print table (hidden on screen) -->
+      <table id="print-table">
+        <thead>
+          <tr>
+            <th>#</th><th>이름</th><th>유형</th><th>방문일</th><th>연락처</th>
+            <th>이메일</th><th>생년월일</th><th>주소</th><th>출석교회</th><th>세례</th><th>기도제목</th>
+          </tr>
+        </thead>
+        <tbody id="print-tbody"></tbody>
+      </table>
+    </div>
+
+  </div><!-- /page-wrap -->
+</div><!-- /app -->
+
+<!-- Bottom Nav -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" id="nav-input" onclick="switchPage('input',null,'nav-input')">
+    <span class="ico">✏️</span><span>등록</span>
+  </button>
+  <button class="nav-btn" id="nav-list" onclick="switchPage('list',null,'nav-list')">
+    <span class="ico">👥</span><span>명단</span>
+  </button>
+</nav>
+
+<!-- Detail Modal -->
+<div class="modal-overlay" id="detailModal" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-title">등록 상세 정보</span>
+      <button class="modal-close" onclick="document.getElementById('detailModal').classList.remove('show')">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-actions" id="modalActions"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  window._fbModules = { initializeApp, getDatabase, ref, push, onValue, remove };
+
+  const cfg = {
+    apiKey: "AIzaSyBzhScu58a3R7bX0YVSQ9yJUkNxaM2Fy_A",
+    authDomain: "suc-newcomers-13b83.firebaseapp.com",
+    projectId: "suc-newcomers-13b83",
+    databaseURL: "https://suc-newcomers-13b83-default-rtdb.firebaseio.com"
+  };
+  try {
+    const app = initializeApp(cfg, 'suc-app');
+    const db  = getDatabase(app);
+    window._fbDb = db;
+    onValue(ref(db, 'visitors'), snapshot => {
+      window._records = [];
+      snapshot.forEach(child => window._records.unshift({ _key: child.key, ...child.val() }));
+      window._updateStats && window._updateStats();
+      if (window._currentPage === 'list') window._renderList && window._renderList();
+    });
+    document.getElementById('mob-badge') && (document.getElementById('mob-badge').title = 'Firebase 연결됨');
+  } catch(e) { console.warn('Firebase init:', e.message); }
+</script>
+
+<script>
+  window._records = [];
+  window._currentPage = 'input';
+  let activeFilter = 'all';
+
+  window.addEventListener('load', () => {
+    document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+    document.getElementById('print-date').textContent = '출력일: ' + new Date().toLocaleDateString('ko-KR');
+  });
+
+  /* ── Nav ── */
+  function switchPage(page, sidebarEl, navId) {
+    window._currentPage = page;
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+    if (sidebarEl) sidebarEl.classList.add('active');
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    const nid = navId || { input:'nav-input', list:'nav-list' }[page];
+    if (nid) document.getElementById(nid).classList.add('active');
+    if (page === 'list') _renderList();
+  }
+
+  /* ── Toggles ── */
+  function selectType(t) {
+    document.getElementById('f-type').value = t;
+    document.getElementById('btn-visitor').className = 'type-btn' + (t==='방문자' ? ' active-visitor' : '');
+    document.getElementById('btn-new').className     = 'type-btn' + (t==='새신자'  ? ' active-new'     : '');
+  }
+  function setBaptism(yes) {
+    document.getElementById('f-baptism').value = yes ? 'Y' : 'N';
+    document.getElementById('yn-y').className = 'yn-btn' + (yes  ? ' active' : '');
+    document.getElementById('yn-n').className = 'yn-btn' + (!yes ? ' active' : '');
+  }
+  function setService(yes) {
+    document.getElementById('f-service').value = yes ? 'O' : 'X';
+    document.getElementById('srv-y').className = 'yn-btn' + (yes  ? ' active' : '');
+    document.getElementById('srv-n').className = 'yn-btn' + (!yes ? ' active' : '');
+  }
+
+  /* ── Family ── */
+  function addFamilyRow() {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><input type="text"></td><td><input type="text"></td>
+      <td><select><option>Y</option><option>N</option></select></td>
+      <td><input type="text"></td><td><input type="text"></td>
+      <td><button class="del-row-btn" onclick="removeRow(this)">✕</button></td>`;
+    document.getElementById('familyBody').appendChild(tr);
+  }
+  function removeRow(btn) { btn.closest('tr').remove(); }
+  function getFamilyData() {
+    return Array.from(document.querySelectorAll('#familyBody tr')).map(tr => {
+      const c = tr.querySelectorAll('input,select');
+      return { relation:c[0]?.value, name:c[1]?.value, baptism:c[2]?.value, position:c[3]?.value, church:c[4]?.value };
+    }).filter(r => r.name);
+  }
+
+  /* ── Save ── */
+  async function saveRecord() {
+    const name = document.getElementById('f-name').value.trim();
+    const date = document.getElementById('f-date').value.trim();
+    if (!name) { showToast('⚠️ 이름을 입력해 주세요'); document.getElementById('f-name').focus(); return; }
+    if (!date) { showToast('⚠️ 방문일을 입력해 주세요'); return; }
+    if (!window._fbDb) { showToast('⚠️ Firebase 연결을 확인해 주세요'); return; }
+
+    const btn = document.getElementById('saveBtn');
+    btn.disabled = true; btn.textContent = '저장 중...';
+    const { ref, push } = window._fbModules;
+    const record = {
+      name, type: document.getElementById('f-type').value, date,
+      birth:          document.getElementById('f-birth').value.trim(),
+      phone:          document.getElementById('f-phone').value.trim(),
+      email:          document.getElementById('f-email').value.trim(),
+      address:        document.getElementById('f-addr').value.trim(),
+      job:            document.getElementById('f-job').value.trim(),
+      baptism:        document.getElementById('f-baptism').value,
+      baptismYear:    document.getElementById('f-baptism-year').value.trim(),
+      baptismChurch:  document.getElementById('f-baptism-church').value.trim(),
+      prevChurch:     document.getElementById('f-prev-church').value.trim(),
+      prevLocation:   document.getElementById('f-prev-loc').value.trim(),
+      prevDenom:      document.getElementById('f-prev-denom').value.trim(),
+      prevPastor:     document.getElementById('f-prev-pastor').value.trim(),
+      serviceExp:     document.getElementById('f-service').value,
+      family:         getFamilyData(),
+      memo:           document.getElementById('f-memo').value.trim(),
+      note:           document.getElementById('f-note').value.trim(),
+      savedAt:        new Date().toISOString()
+    };
+    try {
+      await push(ref(window._fbDb, 'visitors'), record);
+      showToast('✅ ' + name + '님이 저장되었습니다!');
+      clearForm();
+    } catch(e) { showToast('❌ 저장 실패: ' + e.message); }
+    btn.disabled = false; btn.textContent = '☁️ 저장하기';
+  }
+
+  function clearForm() {
+    ['f-name','f-birth','f-phone','f-email','f-addr','f-job',
+     'f-baptism-year','f-baptism-church','f-prev-church','f-prev-loc',
+     'f-prev-denom','f-prev-pastor','f-memo','f-note'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+    document.getElementById('familyBody').innerHTML = `<tr>
+      <td><input type="text"></td><td><input type="text"></td>
+      <td><select><option>Y</option><option>N</option></select></td>
+      <td><input type="text"></td><td><input type="text"></td>
+      <td><button class="del-row-btn" onclick="removeRow(this)">✕</button></td></tr>`;
+    selectType('방문자'); setBaptism(true); setService(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* ── List ── */
+  function setFilter(f, el) {
+    activeFilter = f;
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active'); _renderList();
+  }
+
+  function _renderList() {
+    const q = (document.getElementById('searchInput')?.value||'').toLowerCase();
+    const filtered = (window._records||[]).filter(r => {
+      const mq = !q || (r.name||'').includes(q)||(r.phone||'').includes(q)||(r.email||'').toLowerCase().includes(q);
+      return mq && (activeFilter==='all' || r.type===activeFilter);
+    });
+    const el = document.getElementById('memberList');
+    if (!filtered.length) {
+      el.innerHTML = `<div class="empty-state"><span class="ico">📭</span><p>${(window._records||[]).length ? '검색 결과가 없습니다' : 'Firebase에 연결되면 명단이 표시됩니다'}</p></div>`;
+    } else {
+      el.innerHTML = filtered.map(r => {
+        const badge = r.type==='새신자'
+          ? '<span class="badge badge-new">새신자</span>'
+          : '<span class="badge badge-visitor">방문자</span>';
+        const sub = [r.phone, r.job||r.prevChurch].filter(Boolean).join(' · ') || '추가 정보 없음';
+        return `<div class="member-card" onclick="showDetail('${r._key}')">
+          <div class="avatar">${(r.name||'?').slice(0,1)}</div>
+          <div class="member-info"><div class="member-name">${r.name} ${badge}</div><div class="member-sub">${sub}</div></div>
+          <div class="member-date">${r.date||''}</div></div>`;
+      }).join('');
+    }
+    /* Build print table */
+    document.getElementById('print-tbody').innerHTML = filtered.map((r,i) => `<tr>
+      <td>${i+1}</td>
+      <td><strong>${r.name}</strong></td>
+      <td><span class="pbadge ${r.type==='새신자'?'pbadge-n':'pbadge-v'}">${r.type}</span></td>
+      <td>${r.date||''}</td>
+      <td>${r.phone||''}</td>
+      <td>${r.email||''}</td>
+      <td>${r.birth||''}</td>
+      <td>${r.address||''}</td>
+      <td>${r.prevChurch||''}</td>
+      <td>${r.baptism||''}</td>
+      <td>${r.memo||''}</td>
+    </tr>`).join('');
+  }
+  window._renderList = _renderList;
+
+  /* ── Stats ── */
+  function _updateStats() {
+    const r = window._records||[], t=r.length, v=r.filter(x=>x.type==='방문자').length, n=r.filter(x=>x.type==='새신자').length;
+    ['s-total','s-visitor','s-new'].forEach((id,i)=>{ const el=document.getElementById(id); if(el) el.textContent=[t,v,n][i]; });
+    const mob=document.getElementById('mob-badge'); if(mob) mob.textContent=t+'명';
+  }
+  window._updateStats = _updateStats;
+
+  /* ── Print ── */
+  function printList() {
+    document.getElementById('print-date').textContent = '출력일: ' + new Date().toLocaleDateString('ko-KR');
+    window.print();
+  }
+
+  /* ── Detail Modal ── */
+  function showDetail(key) {
+    const r = (window._records||[]).find(x => x._key===key);
+    if (!r) return;
+    window._detailKey = key;
+    const fields = [
+      ['방문일',r.date],['유형',r.type],['연락처',r.phone],['이메일',r.email],
+      ['생년월일',r.birth],['주소',r.address],['학교/직장',r.job],
+      ['세례',r.baptism+(r.baptismYear?' ('+r.baptismYear+')':'')+(r.baptismChurch?' — '+r.baptismChurch:'')],
+      ['출석교회',r.prevChurch+(r.prevLocation?' / '+r.prevLocation:'')+(r.prevDenom?' ('+r.prevDenom+')':'')],
+      ['담임목사',r.prevPastor],['봉사경험',r.serviceExp],
+      ['기도제목',r.memo],['참고사항',r.note],
+    ].filter(([,v])=>v);
+    const familyHtml = (r.family&&r.family.length) ? `
+      <div class="detail-sec">가족</div>
+      ${r.family.map(f=>`<div class="detail-field">
+        <span class="key">${f.relation||''}</span>
+        <span class="val">${f.name}${f.position?' ('+f.position+')':''} ${f.church?'— '+f.church:''} [세례:${f.baptism||'?'}]</span>
+      </div>`).join('')}` : '';
+    document.getElementById('modalBody').innerHTML = `
+      <div class="detail-avatar">${(r.name||'?').slice(0,1)}</div>
+      <div class="detail-name">${r.name}</div>
+      <div class="detail-type">${r.type==='새신자'?'<span class="badge badge-new">새신자</span>':'<span class="badge badge-visitor">방문자</span>'}</div>
+      <div class="detail-sec">기본 정보</div>
+      ${fields.map(([k,v])=>`<div class="detail-field"><span class="key">${k}</span><span class="val">${v}</span></div>`).join('')}
+      ${familyHtml}`;
+    document.getElementById('modalActions').innerHTML = `
+      <button class="btn btn-danger btn-sm" style="flex:1" onclick="deleteRecord()">🗑 삭제</button>
+      <button class="btn btn-outline btn-sm" style="flex:1" onclick="document.getElementById('detailModal').classList.remove('show')">닫기</button>`;
+    document.getElementById('detailModal').classList.add('show');
+  }
+
+  function closeModal(e) { if(e.target.id==='detailModal') document.getElementById('detailModal').classList.remove('show'); }
+
+  async function deleteRecord() {
+    if (!confirm('이 기록을 삭제하시겠습니까?')) return;
+    if (!window._fbDb) return;
+    const { ref, remove } = window._fbModules;
+    try {
+      await remove(ref(window._fbDb, 'visitors/'+window._detailKey));
+      document.getElementById('detailModal').classList.remove('show');
+      showToast('🗑 삭제되었습니다');
+    } catch(e) { showToast('❌ 삭제 실패: '+e.message); }
+  }
+
+  function showToast(msg) {
+    const t=document.getElementById('toast');
+    t.textContent=msg; t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),3000);
+  }
+
+  Object.assign(window, { switchPage, selectType, setBaptism, setService,
+    addFamilyRow, removeRow, saveRecord, setFilter, showDetail,
+    closeModal, deleteRecord, showToast, printList });
+</script>
+</body>
+</html>
