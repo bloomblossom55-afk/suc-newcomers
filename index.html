@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#1976d2">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>신촌연합교회 — 새신자 등록</title>
+  <title>신촌연합교회 — 새가족부 </title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@400;600&display=swap" rel="stylesheet">
   <style>
@@ -352,21 +352,6 @@ const app = initializeApp(firebaseConfig);
     <!-- ① 등록 입력 -->
     <div class="page active" id="page-input">
 
-      <!-- Hero -->
-      <div class="page-hero">
-        <svg width="48" height="38" viewBox="0 0 80 62" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M18 54 Q4 30 22 10 Q30 2 40 2" stroke="#90caf9" stroke-width="5" fill="none" stroke-linecap="round"/>
-          <path d="M26 56 Q14 36 28 18 Q34 10 42 8" stroke="white" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.8"/>
-          <path d="M40 4 Q60 12 68 32 Q72 46 62 56" stroke="white" stroke-width="5" fill="none" stroke-linecap="round"/>
-          <line x1="40" y1="14" x2="40" y2="50" stroke="white" stroke-width="3.5" stroke-linecap="round"/>
-          <line x1="26" y1="28" x2="56" y2="28" stroke="white" stroke-width="3" stroke-linecap="round"/>
-        </svg>
-        <div class="page-hero-text">
-          <div class="welcome">신촌연합교회에 오신 것을 환영합니다!</div>
-          <div class="sub">대한예수교장로회 신촌연합교회</div>
-        </div>
-      </div>
-
       <!-- 방문 유형 + 날짜 -->
       <div class="form-card">
         <div class="form-card-title">방문 유형 및 일자</div>
@@ -492,12 +477,11 @@ const app = initializeApp(firebaseConfig);
           <line x1="40" y1="14" x2="40" y2="50" stroke="#1251a3" stroke-width="3.5" stroke-linecap="round"/>
           <line x1="26" y1="28" x2="56" y2="28" stroke="#1251a3" stroke-width="3" stroke-linecap="round"/>
         </svg>
-        <div id="print-title">신촌연합교회 방문자·새신자 등록 명단</div>
+        <div id="print-title">신촌연합교회 방문자·새신자 명단</div>
         <div id="print-date"></div>
       </div>
 
       <div class="section-title">명단 관리</div>
-      <div class="section-sub">Firebase에 저장된 전체 등록 명단</div>
 
       <div class="print-row">
         <button class="btn btn-outline btn-sm" onclick="showToast('🔄 실시간 동기화 중')">↻ 새로고침</button>
