@@ -8,19 +8,20 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
 
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
   <script>
     try {
       firebase.initializeApp({
         apiKey: "AIzaSyCkZuRJdS5EE4usdfSu1JScl_Yi7_dDTz8",
         authDomain: "suc-newcomers-54690.firebaseapp.com",
         projectId: "suc-newcomers-54690",
+        databaseURL: "https://suc-newcomers-54690-default-rtdb.firebaseio.com",
         storageBucket: "suc-newcomers-54690.firebasestorage.app",
         messagingSenderId: "320033410479",
         appId: "1:320033410479:web:86d3ef115a20b5881ab35a"
       });
-      window._db = firebase.firestore();
-      console.log('[SUC] Firestore ready:', !!window._db);
+      window._db = firebase.database();
+      console.log('[SUC] Realtime DB ready:', !!window._db);
     } catch(e) {
       console.error('[SUC] Firebase init error:', e);
     }
@@ -303,28 +304,24 @@ var TYPE_LABELS = ['방문자', '새신자'];
 var BAP_LABELS  = ['Y', 'N'];
 var SRV_LABELS  = ['O', 'X'];
 
-/* ══ FIRESTORE ══ */
+/* ══ REALTIME DB ══ */
 function initDB() {
   if (!window._db) {
     showToast('⚠️ Firebase 연결 실패');
     return;
   }
-  window._db.collection('visitors')
-    .onSnapshot(function(snap) {
-      _records = snap.docs.map(function(d) {
-        return Object.assign({ _key: d.id }, d.data());
-      });
-      // savedAt 기준 최신순 정렬 (인덱스 불필요)
-      _records.sort(function(a, b) {
-        return (b.savedAt || '').localeCompare(a.savedAt || '');
-      });
-      if (document.getElementById('tab-list').style.display !== 'none') {
-        renderList();
-      }
-    }, function(err) {
-      showToast('⚠️ DB 오류: ' + err.message);
-      console.error('[SUC] Firestore error:', err);
+  window._db.ref('visitors').on('value', function(snap) {
+    _records = [];
+    snap.forEach(function(c) {
+      _records.unshift(Object.assign({ _key: c.key }, c.val()));
     });
+    if (document.getElementById('tab-list').style.display !== 'none') {
+      renderList();
+    }
+  }, function(err) {
+    showToast('⚠️ DB 오류: ' + err.message);
+    console.error('[SUC] DB error:', err);
+  });
 }
 
 /* ══ BOOT ══ */
@@ -422,7 +419,7 @@ function saveRecord() {
 
   console.log('[SUC] pushing record:', JSON.stringify(rec));
 
-  window._db.collection('visitors').add(rec)
+  window._db.ref('visitors').push(rec)
     .then(function() {
       console.log('[SUC] push success');
       showToast(name + ' (' + typeName + ') 저장 완료!');
@@ -538,7 +535,7 @@ function buildDetailHTML(r) {
 function deleteRecord() {
   if (!confirm('이 기록을 삭제하시겠습니까?')) return;
   if (!window._db) return;
-  window._db.collection('visitors').doc(_detailKey).delete()
+  window._db.ref('visitors/' + _detailKey).remove()
     .then(function() { showToast('삭제되었습니다'); showTab('list'); })
     .catch(function(e) { showToast('삭제 실패: ' + e.message); });
 }
