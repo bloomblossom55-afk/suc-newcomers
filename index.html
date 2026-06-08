@@ -79,6 +79,7 @@ body{font-family:'Noto Sans KR','맑은 고딕','Malgun Gothic',sans-serif;backg
 .btn-print{background:#d1fae5;color:#065f46;}
 .btn-danger{background:#fee2e2;color:#991b1b;}
 .btn-back{background:#e2e8f0;color:#333;}
+.btn-edit{background:#fef9c3;color:#78350f;}
 
 .list-empty{padding:40px;text-align:center;color:#aaa;font-size:14px;}
 .loading{padding:40px;text-align:center;color:#888;font-size:14px;}
@@ -280,9 +281,89 @@ body{font-family:'Noto Sans KR','맑은 고딕','Malgun Gothic',sans-serif;backg
     <div class="act-row" style="margin-bottom:12px;">
       <button class="btn btn-back" onclick="showTab('list')">← 목록</button>
       <button class="btn btn-print" onclick="printDetail()">🖨️ 출력</button>
+      <button class="btn btn-edit" onclick="openEdit()">✏️ 수정</button>
       <button class="btn btn-danger" onclick="deleteRecord()">🗑️ 삭제</button>
     </div>
     <div id="detail-content"></div>
+  </div>
+
+  <!-- ④ 수정 -->
+  <div id="tab-edit" style="display:none;">
+    <div class="act-row" style="margin-bottom:12px;">
+      <button class="btn btn-back" onclick="showTab('detail')">← 취소</button>
+      <button class="btn btn-primary" id="updateBtn" onclick="updateRecord()" style="flex:1;">💾 저장</button>
+    </div>
+    <div class="card">
+      <h2>등록 정보 수정</h2>
+
+      <div class="sec">방문 유형</div>
+      <div class="type-sel">
+        <button class="type-btn on" id="e-typeBtn0" onclick="eSetType(0)">방문자</button>
+        <button class="type-btn"   id="e-typeBtn1" onclick="eSetType(1)">새신자</button>
+      </div>
+
+      <div class="sec">기본 정보</div>
+      <div class="row">
+        <div class="fg"><label>방문일 <span class="req">*</span></label><input id="e-date" type="date"></div>
+        <div class="fg"><label>이름 <span class="req">*</span></label><input id="e-name" type="text"></div>
+        <div class="fg"><label>생년월일</label><input id="e-birth" type="text" placeholder="예) 1990.01.01"></div>
+      </div>
+      <div class="row">
+        <div class="fg"><label>전화번호</label><input id="e-phone" type="tel"></div>
+        <div class="fg"><label>이메일</label><input id="e-email" type="email"></div>
+      </div>
+
+      <div class="sec">거주지 · 직장</div>
+      <div class="row">
+        <div class="fg"><label>주소</label><input id="e-addr" type="text"></div>
+        <div class="fg"><label>학교 / 직장</label><input id="e-job" type="text"></div>
+      </div>
+
+      <div class="sec">세례</div>
+      <div class="row">
+        <div class="fg">
+          <label>세례 여부</label>
+          <div class="yn-row">
+            <button class="yn-btn on" id="e-bap0" onclick="eSetBap(0)">Y (받음)</button>
+            <button class="yn-btn"   id="e-bap1" onclick="eSetBap(1)">N (안받음)</button>
+          </div>
+        </div>
+        <div class="fg"><label>세례년도</label><input id="e-bap-yr" type="text" placeholder="예) 2010"></div>
+        <div class="fg"><label>집례교회</label><input id="e-bap-ch" type="text"></div>
+      </div>
+
+      <div class="sec">신앙이력</div>
+      <div class="row">
+        <div class="fg"><label>출석교회</label><input id="e-pch" type="text"></div>
+        <div class="fg"><label>소재지</label><input id="e-ploc" type="text"></div>
+      </div>
+      <div class="row">
+        <div class="fg"><label>교단</label><input id="e-pden" type="text"></div>
+        <div class="fg"><label>담임목사 명</label><input id="e-ppas" type="text"></div>
+        <div class="fg">
+          <label>봉사경험</label>
+          <div class="yn-row">
+            <button class="yn-btn on" id="e-srv0" onclick="eSetSrv(0)">O (있음)</button>
+            <button class="yn-btn"   id="e-srv1" onclick="eSetSrv(1)">X (없음)</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec">가족</div>
+      <div class="fam-wrap">
+        <table class="fam-tbl">
+          <thead><tr><th>관계</th><th>이름</th><th>세례</th><th>직분</th><th>출석교회</th><th></th></tr></thead>
+          <tbody id="e-famBody"></tbody>
+        </table>
+      </div>
+      <button class="add-row-btn" onclick="eAddRow()">+ 가족 추가</button>
+
+      <div class="sec">기도제목 · 참고사항</div>
+      <div class="row">
+        <div class="fg"><label>기도제목</label><textarea id="e-memo"></textarea></div>
+        <div class="fg"><label>참고사항</label><textarea id="e-note"></textarea></div>
+      </div>
+    </div>
   </div>
 
   <div id="print-area"></div>
@@ -336,11 +417,12 @@ window.addEventListener('DOMContentLoaded', function() {
 
 /* ══ TAB ══ */
 function showTab(t) {
-  ['input','list','detail'].forEach(function(id) {
-    document.getElementById('tab-'+id).style.display = (id===t) ? 'block' : 'none';
+  ['input','list','detail','edit'].forEach(function(id) {
+    var el = document.getElementById('tab-'+id);
+    if (el) el.style.display = (id===t) ? 'block' : 'none';
   });
   document.getElementById('tab-btn-input').className = 'tab-btn' + (t==='input' ? ' active' : '');
-  document.getElementById('tab-btn-list').className  = 'tab-btn' + ((t==='list'||t==='detail') ? ' active' : '');
+  document.getElementById('tab-btn-list').className  = 'tab-btn' + ((t==='list'||t==='detail'||t==='edit') ? ' active' : '');
   if (t === 'list') renderList();
 }
 
@@ -532,6 +614,141 @@ function buildDetailHTML(r) {
     + '</div>';
 }
 
+
+/* ══ EDIT STATE ══ */
+var _eTypeIdx = 0;
+var _eBapIdx  = 0;
+var _eSrvIdx  = 0;
+
+function eSetType(idx) {
+  _eTypeIdx = idx;
+  document.getElementById('e-typeBtn0').className = 'type-btn' + (idx===0 ? ' on' : '');
+  document.getElementById('e-typeBtn1').className = 'type-btn' + (idx===1 ? ' on' : '');
+}
+function eSetBap(idx) {
+  _eBapIdx = idx;
+  document.getElementById('e-bap0').className = 'yn-btn' + (idx===0 ? ' on' : '');
+  document.getElementById('e-bap1').className = 'yn-btn' + (idx===1 ? ' on' : '');
+}
+function eSetSrv(idx) {
+  _eSrvIdx = idx;
+  document.getElementById('e-srv0').className = 'yn-btn' + (idx===0 ? ' on' : '');
+  document.getElementById('e-srv1').className = 'yn-btn' + (idx===1 ? ' on' : '');
+}
+function eAddRow() {
+  var tr = document.createElement('tr');
+  tr.innerHTML = '<td><input type="text"></td><td><input type="text"></td>'
+    + '<td><select><option>Y</option><option>N</option></select></td>'
+    + '<td><input type="text"></td><td><input type="text"></td>'
+    + '<td><button class="del-row-btn" onclick="eDelRow(this)">&#x2715;</button></td>';
+  document.getElementById('e-famBody').appendChild(tr);
+}
+function eDelRow(btn) { btn.closest('tr').remove(); }
+function eGetFam() {
+  var rows = Array.from(document.querySelectorAll('#e-famBody tr'));
+  return rows.map(function(tr) {
+    var c = tr.querySelectorAll('input,select');
+    return { relation:c[0]?c[0].value:'', name:c[1]?c[1].value:'', baptism:c[2]?c[2].value:'', position:c[3]?c[3].value:'', church:c[4]?c[4].value:'' };
+  }).filter(function(r){ return r.name && r.name.trim(); });
+}
+
+function openEdit() {
+  var r = _records.find(function(x){ return x._key===_detailKey; });
+  if (!r) return;
+
+  // 기존 데이터 채우기
+  document.getElementById('e-date').value    = r.date || '';
+  document.getElementById('e-name').value    = r.name || '';
+  document.getElementById('e-birth').value   = r.birth || '';
+  document.getElementById('e-phone').value   = r.phone || '';
+  document.getElementById('e-email').value   = r.email || '';
+  document.getElementById('e-addr').value    = r.address || '';
+  document.getElementById('e-job').value     = r.job || '';
+  document.getElementById('e-bap-yr').value  = r.baptismYear || '';
+  document.getElementById('e-bap-ch').value  = r.baptismChurch || '';
+  document.getElementById('e-pch').value     = r.prevChurch || '';
+  document.getElementById('e-ploc').value    = r.prevLocation || '';
+  document.getElementById('e-pden').value    = r.prevDenom || '';
+  document.getElementById('e-ppas').value    = r.prevPastor || '';
+  document.getElementById('e-memo').value    = r.memo || '';
+  document.getElementById('e-note').value    = r.note || '';
+
+  // 유형 토글
+  eSetType(r.type === '새신자' ? 1 : 0);
+  // 세례 토글
+  eSetBap(r.baptism === 'N' ? 1 : 0);
+  // 봉사 토글
+  eSetSrv(r.serviceExp === 'X' ? 1 : 0);
+
+  // 가족 테이블
+  var tbody = document.getElementById('e-famBody');
+  tbody.innerHTML = '';
+  if (r.family && r.family.length) {
+    r.family.forEach(function(f) {
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td><input type="text" value="'+(f.relation||'')+'"></td>'
+        + '<td><input type="text" value="'+(f.name||'')+'"></td>'
+        + '<td><select><option'+(f.baptism==='Y'?' selected':'')+'>Y</option><option'+(f.baptism==='N'?' selected':'')+'>N</option></select></td>'
+        + '<td><input type="text" value="'+(f.position||'')+'"></td>'
+        + '<td><input type="text" value="'+(f.church||'')+'"></td>'
+        + '<td><button class="del-row-btn" onclick="eDelRow(this)">&#x2715;</button></td>';
+      tbody.appendChild(tr);
+    });
+  } else {
+    eAddRow();
+  }
+
+  showTab('edit');
+}
+
+function updateRecord() {
+  var name = document.getElementById('e-name').value.trim();
+  var date = document.getElementById('e-date').value.trim();
+  if (!name) { showToast('이름을 입력해 주세요'); return; }
+  if (!date) { showToast('방문일을 입력해 주세요'); return; }
+  if (!window._db) { showToast('Firebase 연결 안됨'); return; }
+
+  var btn = document.getElementById('updateBtn');
+  btn.disabled = true; btn.textContent = '저장 중…';
+
+  var rec = {
+    name:          name,
+    type:          TYPE_LABELS[_eTypeIdx],
+    date:          date,
+    birth:         document.getElementById('e-birth').value.trim(),
+    phone:         document.getElementById('e-phone').value.trim(),
+    email:         document.getElementById('e-email').value.trim(),
+    address:       document.getElementById('e-addr').value.trim(),
+    job:           document.getElementById('e-job').value.trim(),
+    baptism:       BAP_LABELS[_eBapIdx],
+    baptismYear:   document.getElementById('e-bap-yr').value.trim(),
+    baptismChurch: document.getElementById('e-bap-ch').value.trim(),
+    prevChurch:    document.getElementById('e-pch').value.trim(),
+    prevLocation:  document.getElementById('e-ploc').value.trim(),
+    prevDenom:     document.getElementById('e-pden').value.trim(),
+    prevPastor:    document.getElementById('e-ppas').value.trim(),
+    serviceExp:    SRV_LABELS[_eSrvIdx],
+    family:        eGetFam(),
+    memo:          document.getElementById('e-memo').value.trim(),
+    note:          document.getElementById('e-note').value.trim(),
+    savedAt:       _records.find(function(x){return x._key===_detailKey;})?.savedAt || new Date().toISOString(),
+    updatedAt:     new Date().toISOString()
+  };
+
+  window._db.ref('visitors/' + _detailKey).set(rec)
+    .then(function() {
+      showToast('✅ ' + name + '님 정보가 수정되었습니다');
+      showTab('detail');
+    })
+    .catch(function(e) {
+      showToast('❌ 수정 실패: ' + e.message);
+      console.error(e);
+    })
+    .finally(function() {
+      btn.disabled = false; btn.textContent = '💾 저장';
+    });
+}
+
 function deleteRecord() {
   if (!confirm('이 기록을 삭제하시겠습니까?')) return;
   if (!window._db) return;
@@ -646,6 +863,13 @@ function showToast(msg) {
 
 // expose
 window.showTab = showTab;
+window.openEdit     = openEdit;
+window.updateRecord = updateRecord;
+window.eSetType = eSetType;
+window.eSetBap  = eSetBap;
+window.eSetSrv  = eSetSrv;
+window.eAddRow  = eAddRow;
+window.eDelRow  = eDelRow;
 window.setType = setType;
 window.setBap  = setBap;
 window.setSrv  = setSrv;
